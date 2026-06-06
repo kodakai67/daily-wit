@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>中国历代人口 · 手机版</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&family=Cormorant+Garamond:wght@600;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f3ebdd; --paper2:#ece0cd; --panel:#fbf6ec;
+    --ink:#241d18; --ink-soft:#5d5043; --ink-faint:#8a7c6b;
+    --line:#cdbfa8;
+    --vermilion:#b5331f; --vermilion-deep:#8a2415;
+    --gold:#b8862f; --gold-soft:#d8b25c; --jade:#3f6b5f;
+    --era0:#9a8c79; --era1:#8a9a6b; --era2:#6b8aa0; --era3:#b07d3a; --era4:#a8412c;
+    --shadow:0 10px 28px -16px rgba(60,40,20,.5);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Noto Serif SC",serif;color:var(--ink);font-size:16px;line-height:1.7;
+    background:
+      radial-gradient(120% 60% at 12% 0%, rgba(184,134,47,.10), transparent 55%),
+      radial-gradient(120% 60% at 92% 4%, rgba(181,51,31,.08), transparent 50%),
+      var(--paper);
+    -webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden;
+  }
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+    mix-blend-mode:multiply}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
+
+  header{padding:46px 0 22px;text-align:center}
+  .seal{font-family:"Ma Shan Zheng",cursive;font-size:13px;color:#fff;background:var(--vermilion);
+    width:50px;height:50px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;line-height:1.05;box-shadow:0 6px 14px -6px rgba(138,36,21,.7);
+    margin:0 auto 16px;transform:rotate(-3deg)}
+  .kicker{font-size:11px;letter-spacing:.4em;color:var(--vermilion-deep);text-indent:.4em;font-weight:600;margin-bottom:10px}
+  h1{font-weight:900;font-size:30px;letter-spacing:.03em;line-height:1.18}
+  h1 .em{color:var(--vermilion)}
+  .sub{margin:14px 4px 0;color:var(--ink-soft);font-size:14.5px}
+  .rule{height:1px;margin:26px 0 0;background:linear-gradient(90deg,transparent,var(--line) 15%,var(--line) 85%,transparent)}
+
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:13px;overflow:hidden;margin:26px 0 4px;box-shadow:var(--shadow)}
+  .stat{background:var(--panel);padding:18px 12px;text-align:center}
+  .stat .num{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:34px;color:var(--vermilion-deep);line-height:1}
+  .stat .num small{font-size:.42em;color:var(--ink-soft);font-weight:600;margin-left:2px}
+  .stat .lab{font-size:12px;color:var(--ink-soft);margin-top:6px}
+
+  section{padding:34px 0}
+  .sec-head{display:flex;align-items:baseline;gap:11px;margin-bottom:4px}
+  .sec-head .idx{font-family:"Cormorant Garamond",serif;font-size:24px;color:var(--gold);font-weight:700}
+  .sec-head h2{font-size:22px;font-weight:700;letter-spacing:.02em}
+  .sec-desc{color:var(--ink-soft);font-size:14px;margin:6px 0 20px}
+  .sec-desc b{color:var(--vermilion-deep)}
+
+  /* ---- overview sparkline ---- */
+  .spark-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 12px 10px;box-shadow:var(--shadow)}
+  svg.spark{display:block;width:100%;height:auto}
+  .spark-leg{display:flex;justify-content:center;gap:16px;font-size:11.5px;color:var(--ink-soft);padding-top:6px}
+  .spark-leg span{display:inline-flex;align-items:center;gap:5px}
+  .spark-leg i{width:9px;height:9px;border-radius:50%;display:inline-block}
+
+  /* ---- toggle ---- */
+  .toggle-wrap{display:flex;align-items:center;gap:10px;margin:0 2px 16px;flex-wrap:wrap}
+  .toggle-group{display:flex;gap:3px;background:var(--paper2);border-radius:9px;padding:3px;border:1px solid var(--line)}
+  .toggle-group button{font-family:inherit;font-size:13px;border:0;background:transparent;color:var(--ink-soft);
+    padding:7px 15px;border-radius:6px;font-weight:600}
+  .toggle-group button.on{background:var(--ink);color:var(--paper)}
+  .t-hint{font-size:11.5px;color:var(--ink-faint);font-style:italic;flex:1;min-width:140px}
+
+  /* ---- vertical timeline ---- */
+  .tl{position:relative;padding-left:6px}
+  .node{position:relative;padding:0 0 4px 26px;margin-bottom:14px}
+  .node::before{content:"";position:absolute;left:6px;top:7px;bottom:-18px;width:2px;background:var(--line)}
+  .node:last-child::before{display:none}
+  .node .dot{position:absolute;left:0;top:3px;width:14px;height:14px;border-radius:50%;
+    background:var(--ink);border:2.5px solid var(--paper);box-shadow:0 0 0 1.5px var(--ink);z-index:2}
+  .node.peak .dot{background:var(--gold);box-shadow:0 0 0 1.5px var(--gold)}
+  .node.crash .dot{background:var(--vermilion);box-shadow:0 0 0 1.5px var(--vermilion);width:16px;height:16px;left:-1px}
+  .node.crash .dot::after{content:"";position:absolute;inset:-6px;border:1.5px solid var(--vermilion);border-radius:50%;opacity:.4}
+  .row1{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+  .yr{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:15px;color:var(--ink-soft)}
+  .chg{font-size:11px;font-weight:700;padding:1px 7px;border-radius:20px;font-family:"Cormorant Garamond",serif}
+  .chg.up{color:var(--jade);background:rgba(63,107,95,.12)}
+  .chg.down{color:var(--vermilion);background:rgba(181,51,31,.12)}
+  .nm{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px;line-height:1.4}
+  .barrow{display:flex;align-items:center;gap:9px}
+  .bartrack{flex:1;height:13px;background:var(--paper2);border-radius:7px;overflow:hidden;border:1px solid var(--line)}
+  .bar{height:100%;border-radius:7px;transition:width .55s cubic-bezier(.2,.7,.2,1);width:0}
+  .val{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:15px;color:var(--ink);white-space:nowrap;min-width:62px;text-align:right}
+  .crashbadge{display:inline-block;margin-top:8px;font-size:12.5px;font-weight:700;color:#fff;
+    background:linear-gradient(90deg,var(--vermilion),var(--vermilion-deep));padding:4px 12px;border-radius:7px}
+  .crashbadge .cz{font-family:"Cormorant Garamond",serif;font-size:14px}
+
+  /* ---- crash cards ---- */
+  .crash{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 18px;
+    position:relative;overflow:hidden;box-shadow:var(--shadow);margin-bottom:16px}
+  .crash::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--vermilion),var(--vermilion-deep))}
+  .crash .when{font-size:12px;letter-spacing:.12em;color:var(--vermilion-deep);font-weight:700}
+  .crash h3{font-size:20px;margin:5px 0 0;font-weight:700;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .crash h3 .pct{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:38px;color:var(--vermilion);line-height:1}
+  .crash .flow{font-size:13.5px;color:var(--ink-soft);margin:8px 0 12px}
+  .crash .flow b{color:var(--ink);font-family:"Cormorant Garamond",serif;font-size:15px}
+  .crash .cause{font-size:13.5px;color:var(--ink-soft);border-top:1px dashed var(--line);padding-top:11px}
+  .crash .cause strong{color:var(--vermilion-deep)}
+
+  /* ---- stairs ---- */
+  .step{display:grid;grid-template-columns:74px 1fr;border-left:4px solid;border-bottom:1px solid var(--line)}
+  .step:first-child{border-top:1px solid var(--line)}
+  .step .tier{color:#fff;padding:14px 8px;display:flex;flex-direction:column;justify-content:center;text-align:center}
+  .step .tier .t-no{font-family:"Cormorant Garamond",serif;font-size:11px;letter-spacing:.08em;opacity:.85}
+  .step .tier .t-sz{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:18px;line-height:1.1;margin-top:2px}
+  .step .tier .t-sz small{font-size:.55em}
+  .step .body{padding:14px 16px;background:var(--panel)}
+  .step .body h4{font-size:15.5px;font-weight:700}
+  .step .body .yr2{font-size:12px;color:var(--ink-faint);font-weight:600}
+  .step .body p{font-size:13.5px;color:var(--ink-soft);margin-top:5px}
+  .drv{display:inline-block;background:var(--paper2);border:1px solid var(--line);border-radius:20px;
+    padding:2px 11px;margin:6px 5px 0 0;font-size:12px;color:var(--ink);font-weight:600}
+
+  /* ---- table as cards ---- */
+  .dcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 15px;
+    margin-bottom:9px;box-shadow:0 4px 14px -10px rgba(60,40,20,.5)}
+  .dcard .dtop{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .dcard .dname{font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px}
+  .dcard .dname .sw{width:9px;height:9px;border-radius:50%}
+  .dcard .dspan{font-family:"Cormorant Garamond",serif;font-size:13px;color:var(--ink-faint);font-weight:600}
+  .dcard .dgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:9px;text-align:center}
+  .dcard .dg .gl{font-size:10.5px;color:var(--ink-faint)}
+  .dcard .dg .gv{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:16px;color:var(--ink-soft)}
+  .dcard .dg.hi .gv{color:var(--vermilion-deep)}
+
+  footer{padding:30px 0 56px;color:var(--ink-faint);font-size:12.5px;line-height:1.8}
+  footer .rule{margin-bottom:20px}
+  footer h5{color:var(--ink-soft);font-size:12px;letter-spacing:.1em;margin-bottom:5px;font-weight:700}
+
+  .reveal{opacity:0;transform:translateY(16px);transition:.6s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="seal">人口<br>兴衰</div>
+    <div class="kicker">大起大落 · 两千一百年</div>
+    <h1>中国历代人口的<br><span class="em">脉冲式</span>兴衰</h1>
+    <p class="sub">十四个王朝，在「阶梯—断崖—恢复—再阶梯」中反复振荡。向下滑动，感受每一次盛世与崩溃。</p>
+    <div class="rule"></div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="num">14</div><div class="lab">个主要王朝</div></div>
+    <div class="stat"><div class="num">146<small>年</small></div><div class="lab">平均国祚</div></div>
+    <div class="stat"><div class="num">4.36<small>亿</small></div><div class="lab">清朝顶峰 (1851)</div></div>
+    <div class="stat"><div class="num">≈87<small>%</small></div><div class="lab">明末清初最大跌幅</div></div>
+  </div>
+
+  <!-- 01 overview -->
+  <section id="overview">
+    <div class="sec-head"><span class="idx">01</span><h2>两千年的轮廓</h2></div>
+    <p class="sec-desc">先看整体形状：人口反复触顶又断崖下跌，最后在清代陡然飙升至四亿。</p>
+    <div class="spark-card">
+      <svg class="spark" id="spark" viewBox="0 0 360 190" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="spark-leg">
+        <span><i style="background:var(--gold)"></i>盛世峰值</span>
+        <span><i style="background:var(--vermilion)"></i>大崩溃</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 vertical timeline -->
+  <section id="timeline">
+    <div class="sec-head"><span class="idx">02</span><h2>竖向人口时间轴</h2></div>
+    <p class="sec-desc">时间自上而下，<b>横条长度代表人口规模</b>。滑动时留意条形「变长又骤然变短」——这就是大起大落。</p>
+    <div class="toggle-wrap">
+      <div class="toggle-group" id="scaleToggle">
+        <button data-scale="log" class="on">对数</button>
+        <button data-scale="linear">线性</button>
+      </div>
+      <span class="t-hint" id="tHint">对数刻度：每次涨跌的比例都清晰可见</span>
+    </div>
+    <div class="tl" id="tl"></div>
+  </section>
+
+  <!-- 03 crashes -->
+  <section id="crashes">
+    <div class="sec-head"><span class="idx">03</span><h2>三次大崩溃</h2></div>
+    <p class="sec-desc">王朝更替的大动乱中，战争之外的饥荒与瘟疫往往更致命，人口常在数十年内损失过半。</p>
+
+    <div class="crash reveal">
+      <div class="when">公元 157 → 220 年</div>
+      <h3>东汉末 → 三国 <span class="pct">−65%</span></h3>
+      <div class="flow">峰值 <b>6,500万</b> → 低谷 <b>约2,300万</b></div>
+      <div class="cause"><strong>归因：</strong>黄巾之乱、军阀混战、三国鼎立，叠加大疫流行。中原户口凋敝，「白骨露于野，千里无鸡鸣」。</div>
+    </div>
+    <div class="crash reveal">
+      <div class="when">公元 755 → 764 年</div>
+      <h3>安史之乱 <span class="pct">−68%</span></h3>
+      <div class="flow">峰值 <b>8,000万</b> → 低谷 <b>约2,500万</b></div>
+      <div class="cause"><strong>归因：</strong>八年内战使北方残破，其后藩镇割据、黄巢起义接连冲击，盛唐人口高位再未在唐代恢复。</div>
+    </div>
+    <div class="crash reveal">
+      <div class="when">约 1600 → 1644 年</div>
+      <h3>明末清初 <span class="pct">≈−87%</span></h3>
+      <div class="flow">峰值 <b>约1.5–1.8亿</b> → 谷底 <b>约2,000万</b></div>
+      <div class="cause"><strong>归因：</strong>小冰期大旱、连年饥荒与鼠疫，农民起义与明清易代长期战争交织，史上最惨烈的人口塌缩之一。</div>
+    </div>
+  </section>
+
+  <!-- 04 stairs -->
+  <section id="stairs">
+    <div class="sec-head"><span class="idx">04</span><h2>四级台阶</h2></div>
+    <p class="sec-desc">剧烈振荡之外，人口存在一条长期上升的阶梯，每级背后都有农业技术与制度变革支撑。</p>
+    <div>
+      <div class="step reveal" style="border-color:var(--era1)">
+        <div class="tier" style="background:var(--era1)"><span class="t-no">Ⅰ</span><span class="t-sz">2–3<small>千万</small></span></div>
+        <div class="body"><h4>第一级台阶</h4><div class="yr2">战国 — 秦</div>
+          <p>铁器牛耕普及，郡县制编户齐民，奠定农业文明人口基本盘。
+          <span class="drv">铁器牛耕</span><span class="drv">郡县编户</span></p></div>
+      </div>
+      <div class="step reveal" style="border-color:var(--era2)">
+        <div class="tier" style="background:var(--era2)"><span class="t-no">Ⅱ</span><span class="t-sz">5–6<small>千万</small></span></div>
+        <div class="body"><h4>第二级台阶</h4><div class="yr2">汉 — 唐</div>
+          <p>大一统帝国带来长期和平与大型水利，汉唐盛世反复触及六千万天花板。
+          <span class="drv">大一统</span><span class="drv">水利工程</span></p></div>
+      </div>
+      <div class="step reveal" style="border-color:var(--era3)">
+        <div class="tier" style="background:var(--era3)"><span class="t-no">Ⅲ</span><span class="t-sz">约1<small>亿</small></span></div>
+        <div class="body"><h4>第三级台阶</h4><div class="yr2">北宋后期起</div>
+          <p>占城稻与精耕细作提高单产，商业革命繁荣城市，人口首破一亿。
+          <span class="drv">占城稻</span><span class="drv">商业革命</span></p></div>
+      </div>
+      <div class="step reveal" style="border-color:var(--era4)">
+        <div class="tier" style="background:var(--era4)"><span class="t-no">Ⅳ</span><span class="t-sz">1–4<small>亿+</small></span></div>
+        <div class="body"><h4>第四级台阶</h4><div class="yr2">清 · 乾隆以后</div>
+          <p>摊丁入亩废人头税、美洲高产作物开垦山地、康乾百年和平，人口指数级飙至四亿。
+          <span class="drv">摊丁入亩</span><span class="drv">美洲作物</span><span class="drv">长期和平</span></p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 data -->
+  <section id="data">
+    <div class="sec-head"><span class="idx">05</span><h2>历代数据卡片</h2></div>
+    <p class="sec-desc">每朝的初期、峰值与估算平均人口（万）。</p>
+    <div id="dcards"></div>
+  </section>
+
+  <footer>
+    <div class="rule"></div>
+    <h5>数据来源</h5>
+    <p>葛剑雄主编《中国人口史》（六卷本，复旦大学出版社）；曹树基《中国人口史·明时期》；各朝正史《地理志》《食货志》。</p>
+    <h5 style="margin-top:16px">局限性</h5>
+    <p>古代官方户口多为赋役人口，与实际人口差距大；现代修正仍存争议，分裂时期误差可达±30%。「平均」为综合初期/峰值/末期的粗略估算。各朝疆域不同。仅供学习参考。</p>
+  </footer>
+
+</div>
+
+<script>
+const traj=[
+ {y:-221,p:2000,n:"秦统一六国",t:"start",e:1},
+ {y:-215,p:3000,n:"秦人口峰值",t:"peak",e:1},
+ {y:-206,p:1800,n:"秦末战乱·汉初",t:"trough",e:2},
+ {y:2,p:6000,n:"西汉峰值（元始二年）",t:"peak",e:2},
+ {y:25,p:3500,n:"新莽之乱后·东汉初",t:"trough",e:2},
+ {y:157,p:6500,n:"东汉峰值（永寿三年）",t:"peak",e:2},
+ {y:220,p:2500,n:"汉末大乱·三国初",t:"trough",e:0,crash:"东汉末→三国 约 −65%"},
+ {y:280,p:3500,n:"西晋短暂统一",t:"peak",e:2},
+ {y:316,p:1800,n:"永嘉之乱·西晋亡",t:"trough",e:0},
+ {y:470,p:1500,n:"南北朝低谷（刘宋）",t:"trough",e:0},
+ {y:550,p:5000,n:"南北朝后期峰值",t:"peak",e:0},
+ {y:581,p:3500,n:"隋朝初年",t:"start",e:2},
+ {y:609,p:5600,n:"隋峰值（大业五年）",t:"peak",e:2},
+ {y:618,p:1500,n:"隋末大乱·唐初",t:"trough",e:2},
+ {y:755,p:8000,n:"唐峰值（天宝盛世）",t:"peak",e:2},
+ {y:764,p:2500,n:"安史之乱后",t:"trough",e:2,crash:"安史之乱 约 −68%"},
+ {y:907,p:6000,n:"唐末·五代初",t:"start",e:0},
+ {y:950,p:3500,n:"五代战乱低谷",t:"trough",e:0},
+ {y:960,p:3710,n:"北宋初年",t:"start",e:3},
+ {y:1110,p:12500,n:"北宋峰值（大观四年）",t:"peak",e:3},
+ {y:1127,p:9000,n:"靖康之变",t:"trough",e:3},
+ {y:1200,p:14000,n:"宋·金合计峰值",t:"peak",e:3},
+ {y:1279,p:7000,n:"宋元战争·元初",t:"trough",e:3},
+ {y:1290,p:9000,n:"元峰值（至元末）",t:"peak",e:3},
+ {y:1368,p:8000,n:"元末战乱·明初",t:"trough",e:3},
+ {y:1600,p:18000,n:"明峰值（万历）",t:"peak",e:3},
+ {y:1644,p:2000,n:"明末清初（战乱·饥荒·瘟疫）",t:"trough",e:4,crash:"明末清初 约 −87%"},
+ {y:1741,p:14300,n:"乾隆六年（1.43亿）",t:"mid",e:4},
+ {y:1851,p:43600,n:"清峰值（道光三十年）",t:"peak",e:4},
+ {y:1912,p:40000,n:"清末",t:"end",e:4},
+];
+const dyn=[
+ ["秦",-221,-206,15,2000,3000,2500,1],["西汉",-206,8,214,1800,6000,4500,2],
+ ["东汉",25,220,195,3500,6500,5500,2],["三国",220,280,60,2500,3000,2300,0],
+ ["西晋",265,316,51,3500,3500,3000,2],["南北朝",420,589,169,1500,5000,3000,0],
+ ["隋",581,618,37,3500,5600,4800,2],["唐",618,907,289,1500,8000,5500,2],
+ ["五代十国",907,960,53,6000,3500,4000,0],["北宋",960,1127,167,3710,12500,8500,3],
+ ["南宋",1127,1279,152,8060,14000,11000,3],["元",1271,1368,97,7000,9000,8000,3],
+ ["明",1368,1644,276,8000,18000,13000,3],["清",1644,1912,268,2000,43600,22000,4],
+];
+const eraVar=["var(--era0)","var(--era1)","var(--era2)","var(--era3)","var(--era4)"];
+const PMAX=45000,PLO=1000;
+const fmt=p=>p>=10000?(p/10000).toFixed(p%10000?2:0)+"亿":p.toLocaleString()+"万";
+const yr=y=>y<0?"前"+Math.abs(y):"公元"+y;
+
+let scale="log";
+function barW(p){
+  if(scale==="linear") return Math.max(3,p/PMAX*100);
+  const a=Math.log10(PLO),b=Math.log10(PMAX);
+  return Math.max(5,(Math.log10(Math.max(p,PLO))-a)/(b-a)*100);
+}
+
+/* ---- vertical timeline ---- */
+const tl=document.getElementById("tl");
+function buildTL(){
+  tl.innerHTML="";
+  traj.forEach((pt,i)=>{
+    const cls=pt.crash?"crash":(pt.t==="peak"?"peak":"");
+    let chg="";
+    if(i>0){const d=(pt.p-traj[i-1].p)/traj[i-1].p*100;
+      const up=d>=0; chg=`<span class="chg ${up?"up":"down"}">${up?"▲ +":"▼ "}${Math.round(d)}%</span>`;}
+    const node=document.createElement("div");
+    node.className="node "+cls;
+    node.innerHTML=`<span class="dot"></span>
+      <div class="row1"><span class="yr">${yr(pt.y)}年</span>${chg}</div>
+      <div class="nm">${pt.n}</div>
+      <div class="barrow">
+        <div class="bartrack"><div class="bar" data-w="${barW(pt.p)}" style="background:${eraVar[pt.e]}"></div></div>
+        <span class="val">${fmt(pt.p)}</span>
+      </div>
+      ${pt.crash?`<div class="crashbadge">⚡ 断崖 <span class="cz">${pt.crash.split(" ").slice(-2).join(" ")}</span></div>`:""}`;
+    tl.append(node);
+  });
+  animateBars();
+}
+function animateBars(){
+  const bars=tl.querySelectorAll(".bar");
+  const io=new IntersectionObserver(es=>es.forEach(x=>{
+    if(x.isIntersecting){x.target.style.width=x.target.dataset.w+"%";io.unobserve(x.target);}
+  }),{threshold:.4});
+  bars.forEach(b=>{b.style.width="0";io.observe(b);});
+}
+document.getElementById("scaleToggle").addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  scale=b.dataset.scale;
+  [...e.currentTarget.children].forEach(x=>x.classList.toggle("on",x===b));
+  document.getElementById("tHint").textContent= scale==="log"
+    ? "对数刻度：每次涨跌的比例都清晰可见"
+    : "线性刻度：直观看清朝四亿的压倒性领先";
+  buildTL();
+});
+buildTL();
+
+/* ---- sparkline overview ---- */
+(function(){
+  const SVG="http://www.w3.org/2000/svg",W=360,H=190,m={t:14,r:10,b:24,l:10};
+  const iw=W-m.l-m.r,ih=H-m.t-m.b,Y0=-221,Y1=1912;
+  const xs=y=>m.l+(y-Y0)/(Y1-Y0)*iw;
+  const ys=p=>m.t+ih*(1-p/PMAX);
+  const s=document.getElementById("spark");
+  const el=(t,a)=>{const e=document.createElementNS(SVG,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+  const defs=el("defs"),lg=el("linearGradient",{id:"sa",x1:0,y1:0,x2:0,y2:1});
+  [["0%",.4],["60%",.1],["100%",.02]].forEach(([o,op])=>{const st=el("stop",{offset:o,"stop-color":"var(--gold)","stop-opacity":op});lg.append(st);});
+  defs.append(lg);s.append(defs);
+  let d="",ar="M"+xs(traj[0].y)+","+(m.t+ih)+" ";
+  traj.forEach((p,i)=>{d+=(i?"L":"M")+xs(p.y)+","+ys(p.p)+" ";ar+="L"+xs(p.y)+","+ys(p.p)+" ";});
+  ar+="L"+xs(Y1)+","+(m.t+ih)+" Z";
+  s.append(el("path",{d:ar,fill:"url(#sa)"}));
+  s.append(el("path",{d:d,fill:"none",stroke:"var(--ink)","stroke-width":1.8,"stroke-linejoin":"round"}));
+  // peaks + crashes
+  traj.forEach(p=>{
+    if(p.t==="peak")s.append(el("circle",{cx:xs(p.y),cy:ys(p.p),r:2.6,fill:"var(--gold)",stroke:"var(--panel)","stroke-width":1}));
+    if(p.crash)s.append(el("circle",{cx:xs(p.y),cy:ys(p.p),r:3.6,fill:"var(--vermilion)",stroke:"var(--panel)","stroke-width":1.2}));
+  });
+  // 清 peak callout
+  const cp=traj.find(p=>p.y===1851);
+  s.append(el("circle",{cx:xs(1851),cy:ys(43600),r:3.2,fill:"var(--gold)",stroke:"var(--panel)","stroke-width":1}));
+  const tx=document.createElementNS(SVG,"text");
+  tx.setAttribute("x",xs(1851)-2);tx.setAttribute("y",ys(43600)-6);tx.setAttribute("text-anchor","end");
+  tx.setAttribute("font-size","10");tx.setAttribute("fill","var(--vermilion-deep)");tx.setAttribute("font-weight","700");
+  tx.textContent="4.36亿";s.append(tx);
+  // x labels
+  [[-210,"秦"],[150,"汉"],[700,"唐"],[1080,"宋"],[1500,"明"],[1820,"清"]].forEach(([y,l])=>{
+    const t=document.createElementNS(SVG,"text");
+    t.setAttribute("x",xs(y));t.setAttribute("y",H-8);t.setAttribute("text-anchor","middle");
+    t.setAttribute("font-size","11");t.setAttribute("fill","var(--ink-faint)");t.textContent=l;s.append(t);
+  });
+})();
+
+/* ---- data cards ---- */
+const dc=document.getElementById("dcards");
+dyn.forEach(r=>{
+  const div=document.createElement("div");div.className="dcard";
+  div.innerHTML=`<div class="dtop">
+      <span class="dname"><span class="sw" style="background:${eraVar[r[7]]}"></span>${r[0]}</span>
+      <span class="dspan">${r[1]<0?"前"+Math.abs(r[1]):r[1]}–${r[2]<0?"前"+Math.abs(r[2]):r[2]} · ${r[3]}年</span>
+    </div>
+    <div class="dgrid">
+      <div class="dg"><div class="gl">初期</div><div class="gv">${(r[4]/10000>=1?(r[4]/10000).toFixed(2)+"亿":r[4]+"万")}</div></div>
+      <div class="dg"><div class="gl">峰值</div><div class="gv">${(r[5]/10000>=1?(r[5]/10000).toFixed(2)+"亿":r[5]+"万")}</div></div>
+      <div class="dg hi"><div class="gl">平均</div><div class="gv">${(r[6]/10000>=1?(r[6]/10000).toFixed(2)+"亿":r[6]+"万")}</div></div>
+    </div>`;
+  dc.append(div);
+});
+
+/* ---- reveal ---- */
+const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add("in");io.unobserve(x.target);}}),{threshold:.12});
+document.querySelectorAll(".reveal").forEach(e=>io.observe(e));
+</script>
+</body>
+</html>
